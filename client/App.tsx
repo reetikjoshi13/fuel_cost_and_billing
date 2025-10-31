@@ -32,4 +32,14 @@ const App = () => (
   </QueryClientProvider>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Ensure we only create a single React root (prevents Vite HMR double-mount warnings)
+const container = document.getElementById("root");
+if (container) {
+  // @ts-ignore - attach to window to survive HMR reloads
+  if (!(window as any).__REACT_ROOT) {
+    // create and stash root
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    (window as any).__REACT_ROOT = createRoot(container);
+  }
+  (window as any).__REACT_ROOT.render(<App />);
+}
