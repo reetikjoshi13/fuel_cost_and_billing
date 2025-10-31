@@ -57,6 +57,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Brand aliases
+        "brand-teal": "var(--brand-teal)",
+        "brand-ink": "var(--brand-ink)",
+        "brand-amber": "var(--brand-amber)",
       },
       borderRadius: {
         lg: "var(--radius)",
