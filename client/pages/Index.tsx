@@ -2,14 +2,40 @@ import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Fuel, IndianRupee, TrendingDown, TrendingUp } from "lucide-react";
 
 // Types
@@ -82,7 +108,13 @@ export default function Index() {
       return acc;
     }, {});
 
-    const mileagePoints: { busId: string; date: string; km: number; liters: number; mileage: number }[] = [];
+    const mileagePoints: {
+      busId: string;
+      date: string;
+      km: number;
+      liters: number;
+      mileage: number;
+    }[] = [];
     const byBus = fuelLogs
       .slice()
       .sort((a, b) => a.odometer - b.odometer)
@@ -98,24 +130,34 @@ export default function Index() {
         const km = Math.max(0, curr.odometer - prev.odometer);
         const liters = prev.liters;
         if (liters > 0 && km > 0) {
-          mileagePoints.push({ busId: curr.busId, date: curr.date, km, liters, mileage: km / liters });
+          mileagePoints.push({
+            busId: curr.busId,
+            date: curr.date,
+            km,
+            liters,
+            mileage: km / liters,
+          });
         }
       }
     });
     const avgMileage =
       mileagePoints.length > 0
-        ? mileagePoints.reduce((s, p) => s + p.mileage, 0) / mileagePoints.length
+        ? mileagePoints.reduce((s, p) => s + p.mileage, 0) /
+          mileagePoints.length
         : 0;
     const totalKm = mileagePoints.reduce((s, p) => s + p.km, 0);
     const costPerKm = totalKm > 0 ? totalFuelSpend / totalKm : 0;
 
     const busMileage = Object.entries(
-      mileagePoints.reduce<Record<string, { sum: number; count: number }>>((acc, p) => {
-        const e = (acc[p.busId] ||= { sum: 0, count: 0 });
-        e.sum += p.mileage;
-        e.count += 1;
-        return acc;
-      }, {}),
+      mileagePoints.reduce<Record<string, { sum: number; count: number }>>(
+        (acc, p) => {
+          const e = (acc[p.busId] ||= { sum: 0, count: 0 });
+          e.sum += p.mileage;
+          e.count += 1;
+          return acc;
+        },
+        {},
+      ),
     ).map(([busId, v]) => ({ busId, mileage: v.sum / v.count }));
 
     const vendorSpend = Object.entries(vendorSpendMap)
@@ -130,12 +172,19 @@ export default function Index() {
       .map((p) => ({
         id: `${p.busId}-${p.date}`,
         type: "mileage_drop" as const,
-        message: `Mileage drop on ${p.busId}: ${(p.mileage).toFixed(2)} km/l (< ${(baseline * 0.8).toFixed(1)} km/l)`,
+        message: `Mileage drop on ${p.busId}: ${p.mileage.toFixed(2)} km/l (< ${(baseline * 0.8).toFixed(1)} km/l)`,
         severity: p.mileage < baseline * 0.6 ? "high" : "medium",
         date: p.date,
       }));
 
-    return { totalFuelSpend, costPerKm, avgMileage, busMileage, vendorSpend, alerts };
+    return {
+      totalFuelSpend,
+      costPerKm,
+      avgMileage,
+      busMileage,
+      vendorSpend,
+      alerts,
+    };
   }, [fuelLogs]);
 
   // Form state
@@ -197,10 +246,26 @@ export default function Index() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
-        <KpiCard title="Total Fuel Spend" value={`₹ ${totals.totalFuelSpend.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`} trendIcon={<TrendingUp className="h-4 w-4 text-brand-amber" />} />
-        <KpiCard title="Avg Cost / km" value={`₹ ${totals.costPerKm.toFixed(2)}`} trendIcon={<IndianRupee className="h-4 w-4 text-muted-foreground" />} />
-        <KpiCard title="Avg Mileage" value={`${totals.avgMileage.toFixed(2)} km/l`} trendIcon={<TrendingDown className="h-4 w-4 text-muted-foreground" />} />
-        <KpiCard title="Pending Approvals" value={`${expenses.filter((e) => e.status === "pending").length + invoices.filter((i) => i.status === "pending").length}`} trendIcon={<Badge variant="secondary">live</Badge>} />
+        <KpiCard
+          title="Total Fuel Spend"
+          value={`₹ ${totals.totalFuelSpend.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`}
+          trendIcon={<TrendingUp className="h-4 w-4 text-brand-amber" />}
+        />
+        <KpiCard
+          title="Avg Cost / km"
+          value={`₹ ${totals.costPerKm.toFixed(2)}`}
+          trendIcon={<IndianRupee className="h-4 w-4 text-muted-foreground" />}
+        />
+        <KpiCard
+          title="Avg Mileage"
+          value={`${totals.avgMileage.toFixed(2)} km/l`}
+          trendIcon={<TrendingDown className="h-4 w-4 text-muted-foreground" />}
+        />
+        <KpiCard
+          title="Pending Approvals"
+          value={`${expenses.filter((e) => e.status === "pending").length + invoices.filter((i) => i.status === "pending").length}`}
+          trendIcon={<Badge variant="secondary">live</Badge>}
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-7">
@@ -210,7 +275,12 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <ChartContainer
-              config={{ mileage: { label: "Mileage (km/l)", color: "hsl(var(--brand-teal))" } }}
+              config={{
+                mileage: {
+                  label: "Mileage (km/l)",
+                  color: "hsl(var(--brand-teal))",
+                },
+              }}
             >
               <BarChart data={totals.busMileage}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -227,13 +297,31 @@ export default function Index() {
             <CardTitle>Vendor Spend</CardTitle>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{ amount: { label: "Amount", color: "hsl(var(--brand-ink))" } }}>
+            <ChartContainer
+              config={{
+                amount: { label: "Amount", color: "hsl(var(--brand-ink))" },
+              }}
+            >
               <LineChart data={totals.vendorSpend}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                <XAxis dataKey="vendor" tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={60} />
+                <XAxis
+                  dataKey="vendor"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  angle={-20}
+                  textAnchor="end"
+                  height={60}
+                />
                 <YAxis tickFormatter={(v) => `₹${v / 1000}k`} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="amount" stroke="var(--color-amount)" strokeWidth={2} dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="var(--color-amount)"
+                  strokeWidth={2}
+                  dot={false}
+                />
               </LineChart>
             </ChartContainer>
           </CardContent>
@@ -269,11 +357,19 @@ export default function Index() {
                       <TableCell>{l.busId}</TableCell>
                       <TableCell>{l.driver}</TableCell>
                       <TableCell>{l.station}</TableCell>
-                      <TableCell className="text-right">{l.liters.toFixed(1)}</TableCell>
-                      <TableCell className="text-right">{l.pricePerLiter.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">₹ {l.totalCost.toFixed(0)}</TableCell>
+                      <TableCell className="text-right">
+                        {l.liters.toFixed(1)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {l.pricePerLiter.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        ₹ {l.totalCost.toFixed(0)}
+                      </TableCell>
                       <TableCell>{l.odometer.toLocaleString()}</TableCell>
-                      <TableCell>{new Date(l.date).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        {new Date(l.date).toLocaleDateString()}
+                      </TableCell>
                     </TableRow>
                   ))}
               </TableBody>
@@ -282,14 +378,17 @@ export default function Index() {
         </Card>
         <Card className="md:col-span-3">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">Alerts
+            <CardTitle className="flex items-center justify-between">
+              Alerts
               <Badge variant="secondary">{totals.alerts.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {totals.alerts.length === 0 && (
-                <p className="text-sm text-muted-foreground">No alerts. All good.</p>
+                <p className="text-sm text-muted-foreground">
+                  No alerts. All good.
+                </p>
               )}
               {totals.alerts.map((a) => (
                 <div
@@ -298,7 +397,11 @@ export default function Index() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="font-medium">{a.message}</div>
-                    <Badge variant={a.severity === "high" ? "destructive" : "outline"}>
+                    <Badge
+                      variant={
+                        a.severity === "high" ? "destructive" : "outline"
+                      }
+                    >
                       {a.severity}
                     </Badge>
                   </div>
@@ -322,7 +425,10 @@ export default function Index() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 Expense Claims
-                <Badge variant="secondary">{expenses.filter((e) => e.status === "pending").length} pending</Badge>
+                <Badge variant="secondary">
+                  {expenses.filter((e) => e.status === "pending").length}{" "}
+                  pending
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -339,7 +445,10 @@ export default function Index() {
                 <TableBody>
                   {expenses.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      <TableCell
+                        colSpan={5}
+                        className="text-center text-muted-foreground"
+                      >
                         No expenses yet.
                       </TableCell>
                     </TableRow>
@@ -348,16 +457,20 @@ export default function Index() {
                     <TableRow key={e.id}>
                       <TableCell>{e.driver}</TableCell>
                       <TableCell>{e.category}</TableCell>
-                      <TableCell className="text-right">{e.amount.toLocaleString("en-IN")}</TableCell>
-                      <TableCell>{new Date(e.date).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-right">
+                        {e.amount.toLocaleString("en-IN")}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(e.date).toLocaleDateString()}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant={
                             e.status === "pending"
                               ? "outline"
                               : e.status === "approved"
-                              ? "default"
-                              : "destructive"
+                                ? "default"
+                                : "destructive"
                           }
                         >
                           {e.status}
@@ -375,7 +488,10 @@ export default function Index() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 Vendor Invoices
-                <Badge variant="secondary">{invoices.filter((i) => i.status === "pending").length} pending</Badge>
+                <Badge variant="secondary">
+                  {invoices.filter((i) => i.status === "pending").length}{" "}
+                  pending
+                </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -392,7 +508,10 @@ export default function Index() {
                 <TableBody>
                   {invoices.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center text-muted-foreground">
+                      <TableCell
+                        colSpan={5}
+                        className="text-center text-muted-foreground"
+                      >
                         No invoices yet.
                       </TableCell>
                     </TableRow>
@@ -401,16 +520,20 @@ export default function Index() {
                     <TableRow key={e.id}>
                       <TableCell>{e.vendor}</TableCell>
                       <TableCell>{e.invoiceNumber}</TableCell>
-                      <TableCell className="text-right">{e.amount.toLocaleString("en-IN")}</TableCell>
-                      <TableCell>{new Date(e.dueDate).toLocaleDateString()}</TableCell>
+                      <TableCell className="text-right">
+                        {e.amount.toLocaleString("en-IN")}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(e.dueDate).toLocaleDateString()}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant={
                             e.status === "pending"
                               ? "outline"
                               : e.status === "paid"
-                              ? "default"
-                              : "destructive"
+                                ? "default"
+                                : "destructive"
                           }
                         >
                           {e.status}
@@ -433,7 +556,15 @@ export default function Index() {
   );
 }
 
-function KpiCard({ title, value, trendIcon }: { title: string; value: string; trendIcon?: React.ReactNode }) {
+function KpiCard({
+  title,
+  value,
+  trendIcon,
+}: {
+  title: string;
+  value: string;
+  trendIcon?: React.ReactNode;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -449,7 +580,11 @@ function KpiCard({ title, value, trendIcon }: { title: string; value: string; tr
   );
 }
 
-function FuelLogDialog({ onSubmit }: { onSubmit: (data: Omit<FuelLog, "id" | "totalCost">) => void }) {
+function FuelLogDialog({
+  onSubmit,
+}: {
+  onSubmit: (data: Omit<FuelLog, "id" | "totalCost">) => void;
+}) {
   const [form, setForm] = useState({
     busId: "BUS-101",
     driver: "Amit",
@@ -465,22 +600,64 @@ function FuelLogDialog({ onSubmit }: { onSubmit: (data: Omit<FuelLog, "id" | "to
         <DialogTitle>Log Refuel</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 py-2 md:grid-cols-2">
-        <Field label="Bus ID" value={form.busId} onChange={(v) => setForm({ ...form, busId: v })} />
-        <Field label="Driver" value={form.driver} onChange={(v) => setForm({ ...form, driver: v })} />
-        <Field label="Station" value={form.station} onChange={(v) => setForm({ ...form, station: v })} />
-        <Field label="Liters" type="number" value={String(form.liters)} onChange={(v) => setForm({ ...form, liters: Number(v) })} />
-        <Field label="Price/L" type="number" value={String(form.pricePerLiter)} onChange={(v) => setForm({ ...form, pricePerLiter: Number(v) })} />
-        <Field label="Odometer" type="number" value={String(form.odometer)} onChange={(v) => setForm({ ...form, odometer: Number(v) })} />
-        <Field label="Date" type="date" value={form.date} onChange={(v) => setForm({ ...form, date: v })} />
+        <Field
+          label="Bus ID"
+          value={form.busId}
+          onChange={(v) => setForm({ ...form, busId: v })}
+        />
+        <Field
+          label="Driver"
+          value={form.driver}
+          onChange={(v) => setForm({ ...form, driver: v })}
+        />
+        <Field
+          label="Station"
+          value={form.station}
+          onChange={(v) => setForm({ ...form, station: v })}
+        />
+        <Field
+          label="Liters"
+          type="number"
+          value={String(form.liters)}
+          onChange={(v) => setForm({ ...form, liters: Number(v) })}
+        />
+        <Field
+          label="Price/L"
+          type="number"
+          value={String(form.pricePerLiter)}
+          onChange={(v) => setForm({ ...form, pricePerLiter: Number(v) })}
+        />
+        <Field
+          label="Odometer"
+          type="number"
+          value={String(form.odometer)}
+          onChange={(v) => setForm({ ...form, odometer: Number(v) })}
+        />
+        <Field
+          label="Date"
+          type="date"
+          value={form.date}
+          onChange={(v) => setForm({ ...form, date: v })}
+        />
       </div>
       <DialogFooter>
-        <Button onClick={() => onSubmit({ ...form, date: new Date(form.date).toISOString() })}>Save</Button>
+        <Button
+          onClick={() =>
+            onSubmit({ ...form, date: new Date(form.date).toISOString() })
+          }
+        >
+          Save
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
 }
 
-function ExpenseDialog({ onSubmit }: { onSubmit: (data: Omit<Expense, "id" | "status">) => void }) {
+function ExpenseDialog({
+  onSubmit,
+}: {
+  onSubmit: (data: Omit<Expense, "id" | "status">) => void;
+}) {
   const [form, setForm] = useState({
     driver: "Amit",
     amount: 500,
@@ -494,23 +671,54 @@ function ExpenseDialog({ onSubmit }: { onSubmit: (data: Omit<Expense, "id" | "st
         <DialogTitle>New Expense</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 py-2 md:grid-cols-2">
-        <Field label="Driver" value={form.driver} onChange={(v) => setForm({ ...form, driver: v })} />
-        <Field label="Amount (₹)" type="number" value={String(form.amount)} onChange={(v) => setForm({ ...form, amount: Number(v) })} />
-        <Field label="Category" value={form.category} onChange={(v) => setForm({ ...form, category: v })} />
+        <Field
+          label="Driver"
+          value={form.driver}
+          onChange={(v) => setForm({ ...form, driver: v })}
+        />
+        <Field
+          label="Amount (₹)"
+          type="number"
+          value={String(form.amount)}
+          onChange={(v) => setForm({ ...form, amount: Number(v) })}
+        />
+        <Field
+          label="Category"
+          value={form.category}
+          onChange={(v) => setForm({ ...form, category: v })}
+        />
         <div className="md:col-span-2">
           <Label className="mb-1 block">Description</Label>
-          <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <Input
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
         </div>
-        <Field label="Date" type="date" value={form.date} onChange={(v) => setForm({ ...form, date: v })} />
+        <Field
+          label="Date"
+          type="date"
+          value={form.date}
+          onChange={(v) => setForm({ ...form, date: v })}
+        />
       </div>
       <DialogFooter>
-        <Button onClick={() => onSubmit({ ...form, date: new Date(form.date).toISOString() })}>Save</Button>
+        <Button
+          onClick={() =>
+            onSubmit({ ...form, date: new Date(form.date).toISOString() })
+          }
+        >
+          Save
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
 }
 
-function InvoiceDialog({ onSubmit }: { onSubmit: (data: Omit<Invoice, "id" | "status">) => void }) {
+function InvoiceDialog({
+  onSubmit,
+}: {
+  onSubmit: (data: Omit<Invoice, "id" | "status">) => void;
+}) {
   const [form, setForm] = useState({
     vendor: "HPCL",
     invoiceNumber: "INV-001",
@@ -523,40 +731,169 @@ function InvoiceDialog({ onSubmit }: { onSubmit: (data: Omit<Invoice, "id" | "st
         <DialogTitle>New Invoice</DialogTitle>
       </DialogHeader>
       <div className="grid gap-4 py-2 md:grid-cols-2">
-        <Field label="Vendor" value={form.vendor} onChange={(v) => setForm({ ...form, vendor: v })} />
-        <Field label="Invoice #" value={form.invoiceNumber} onChange={(v) => setForm({ ...form, invoiceNumber: v })} />
-        <Field label="Amount (₹)" type="number" value={String(form.amount)} onChange={(v) => setForm({ ...form, amount: Number(v) })} />
-        <Field label="Due Date" type="date" value={form.dueDate} onChange={(v) => setForm({ ...form, dueDate: v })} />
+        <Field
+          label="Vendor"
+          value={form.vendor}
+          onChange={(v) => setForm({ ...form, vendor: v })}
+        />
+        <Field
+          label="Invoice #"
+          value={form.invoiceNumber}
+          onChange={(v) => setForm({ ...form, invoiceNumber: v })}
+        />
+        <Field
+          label="Amount (₹)"
+          type="number"
+          value={String(form.amount)}
+          onChange={(v) => setForm({ ...form, amount: Number(v) })}
+        />
+        <Field
+          label="Due Date"
+          type="date"
+          value={form.dueDate}
+          onChange={(v) => setForm({ ...form, dueDate: v })}
+        />
       </div>
       <DialogFooter>
-        <Button onClick={() => onSubmit({ ...form, dueDate: new Date(form.dueDate).toISOString() })}>Save</Button>
+        <Button
+          onClick={() =>
+            onSubmit({ ...form, dueDate: new Date(form.dueDate).toISOString() })
+          }
+        >
+          Save
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
 }
 
-function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
   return (
     <div>
       <Label className="mb-1 block">{label}</Label>
-      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} />
+      <Input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 }
 
 function sampleFuelLogs(): FuelLog[] {
   const now = new Date();
-  const daysAgo = (n: number) => new Date(now.getTime() - n * 86400000).toISOString();
+  const daysAgo = (n: number) =>
+    new Date(now.getTime() - n * 86400000).toISOString();
   const rows: FuelLog[] = [
-    { id: uid(), busId: "BUS-101", driver: "Amit", station: "HPCL", liters: 55, pricePerLiter: 98.7, totalCost: 5429, odometer: 120000, date: daysAgo(12) },
-    { id: uid(), busId: "BUS-102", driver: "Ravi", station: "IOCL", liters: 60, pricePerLiter: 99.2, totalCost: 5952, odometer: 98000, date: daysAgo(11) },
-    { id: uid(), busId: "BUS-101", driver: "Amit", station: "BPCL", liters: 50, pricePerLiter: 99.9, totalCost: 4995, odometer: 120210, date: daysAgo(9) },
-    { id: uid(), busId: "BUS-103", driver: "Neha", station: "HPCL", liters: 65, pricePerLiter: 98.3, totalCost: 6389, odometer: 75210, date: daysAgo(8) },
-    { id: uid(), busId: "BUS-102", driver: "Ravi", station: "Reliance", liters: 58, pricePerLiter: 97.8, totalCost: 5672, odometer: 98220, date: daysAgo(7) },
-    { id: uid(), busId: "BUS-101", driver: "Amit", station: "HPCL", liters: 52, pricePerLiter: 98.4, totalCost: 5117, odometer: 120430, date: daysAgo(5) },
-    { id: uid(), busId: "BUS-103", driver: "Neha", station: "IOCL", liters: 62, pricePerLiter: 99.1, totalCost: 6144, odometer: 75410, date: daysAgo(3) },
-    { id: uid(), busId: "BUS-102", driver: "Ravi", station: "BPCL", liters: 59, pricePerLiter: 99.6, totalCost: 5886, odometer: 98410, date: daysAgo(2) },
-    { id: uid(), busId: "BUS-101", driver: "Amit", station: "Reliance", liters: 51, pricePerLiter: 98.2, totalCost: 5008, odometer: 120640, date: daysAgo(1) },
+    {
+      id: uid(),
+      busId: "BUS-101",
+      driver: "Amit",
+      station: "HPCL",
+      liters: 55,
+      pricePerLiter: 98.7,
+      totalCost: 5429,
+      odometer: 120000,
+      date: daysAgo(12),
+    },
+    {
+      id: uid(),
+      busId: "BUS-102",
+      driver: "Ravi",
+      station: "IOCL",
+      liters: 60,
+      pricePerLiter: 99.2,
+      totalCost: 5952,
+      odometer: 98000,
+      date: daysAgo(11),
+    },
+    {
+      id: uid(),
+      busId: "BUS-101",
+      driver: "Amit",
+      station: "BPCL",
+      liters: 50,
+      pricePerLiter: 99.9,
+      totalCost: 4995,
+      odometer: 120210,
+      date: daysAgo(9),
+    },
+    {
+      id: uid(),
+      busId: "BUS-103",
+      driver: "Neha",
+      station: "HPCL",
+      liters: 65,
+      pricePerLiter: 98.3,
+      totalCost: 6389,
+      odometer: 75210,
+      date: daysAgo(8),
+    },
+    {
+      id: uid(),
+      busId: "BUS-102",
+      driver: "Ravi",
+      station: "Reliance",
+      liters: 58,
+      pricePerLiter: 97.8,
+      totalCost: 5672,
+      odometer: 98220,
+      date: daysAgo(7),
+    },
+    {
+      id: uid(),
+      busId: "BUS-101",
+      driver: "Amit",
+      station: "HPCL",
+      liters: 52,
+      pricePerLiter: 98.4,
+      totalCost: 5117,
+      odometer: 120430,
+      date: daysAgo(5),
+    },
+    {
+      id: uid(),
+      busId: "BUS-103",
+      driver: "Neha",
+      station: "IOCL",
+      liters: 62,
+      pricePerLiter: 99.1,
+      totalCost: 6144,
+      odometer: 75410,
+      date: daysAgo(3),
+    },
+    {
+      id: uid(),
+      busId: "BUS-102",
+      driver: "Ravi",
+      station: "BPCL",
+      liters: 59,
+      pricePerLiter: 99.6,
+      totalCost: 5886,
+      odometer: 98410,
+      date: daysAgo(2),
+    },
+    {
+      id: uid(),
+      busId: "BUS-101",
+      driver: "Amit",
+      station: "Reliance",
+      liters: 51,
+      pricePerLiter: 98.2,
+      totalCost: 5008,
+      odometer: 120640,
+      date: daysAgo(1),
+    },
   ];
   return rows;
 }

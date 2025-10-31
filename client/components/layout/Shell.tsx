@@ -114,10 +114,23 @@ export default function Shell() {
             <div className="ml-auto flex items-center gap-2">
               <div className="relative hidden md:block">
                 <Search className="pointer-events-none absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-8 w-64" placeholder="Search buses, drivers, vendors" />
+                <Input
+                  className="pl-8 w-64"
+                  placeholder="Search buses, drivers, vendors"
+                />
               </div>
-              <Badge variant="secondary" className={cn("hidden sm:inline-flex")}>Beta</Badge>
-              <Button asChild size="sm" variant="outline" className="hidden sm:inline-flex">
+              <Badge
+                variant="secondary"
+                className={cn("hidden sm:inline-flex")}
+              >
+                Beta
+              </Badge>
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="hidden sm:inline-flex"
+              >
                 <Link to="/approvals">Open Approvals</Link>
               </Button>
             </div>

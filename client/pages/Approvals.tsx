@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -52,14 +59,15 @@ export default function Approvals() {
   );
 
   const updateExpenseStatus = (id: string, status: Expense["status"]) => {
-    setExpenses((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
+    setExpenses((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, status } : e)),
+    );
   };
 
-  const updateInvoiceStatus = (
-    id: string,
-    status: Invoice["status"],
-  ) => {
-    setInvoices((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
+  const updateInvoiceStatus = (id: string, status: Invoice["status"]) => {
+    setInvoices((prev) =>
+      prev.map((e) => (e.id === id ? { ...e, status } : e)),
+    );
   };
 
   return (
@@ -69,7 +77,9 @@ export default function Approvals() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Expense Claims
-              <Badge variant="secondary">{pendingCounts.expenses} pending</Badge>
+              <Badge variant="secondary">
+                {pendingCounts.expenses} pending
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -87,7 +97,10 @@ export default function Approvals() {
               <TableBody>
                 {expenses.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={6}
+                      className="text-center text-muted-foreground"
+                    >
                       No expenses yet. Add from the Dashboard.
                     </TableCell>
                   </TableRow>
@@ -96,24 +109,40 @@ export default function Approvals() {
                   <TableRow key={e.id}>
                     <TableCell>{e.driver}</TableCell>
                     <TableCell>{e.category}</TableCell>
-                    <TableCell className="text-right">{e.amount.toLocaleString("en-IN")}</TableCell>
-                    <TableCell>{new Date(e.date).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                      {e.amount.toLocaleString("en-IN")}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(e.date).toLocaleDateString()}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={
                           e.status === "pending"
                             ? "outline"
                             : e.status === "approved"
-                            ? "default"
-                            : "destructive"
+                              ? "default"
+                              : "destructive"
                         }
                       >
                         {e.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
-                      <Button size="sm" variant="outline" onClick={() => updateExpenseStatus(e.id, "approved")}>Approve</Button>
-                      <Button size="sm" variant="ghost" onClick={() => updateExpenseStatus(e.id, "rejected")}>Reject</Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateExpenseStatus(e.id, "approved")}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => updateExpenseStatus(e.id, "rejected")}
+                      >
+                        Reject
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -125,7 +154,9 @@ export default function Approvals() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Vendor Invoices
-              <Badge variant="secondary">{pendingCounts.invoices} pending</Badge>
+              <Badge variant="secondary">
+                {pendingCounts.invoices} pending
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -143,7 +174,10 @@ export default function Approvals() {
               <TableBody>
                 {invoices.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell
+                      colSpan={6}
+                      className="text-center text-muted-foreground"
+                    >
                       No invoices yet. Add from the Dashboard.
                     </TableCell>
                   </TableRow>
@@ -152,24 +186,40 @@ export default function Approvals() {
                   <TableRow key={e.id}>
                     <TableCell>{e.vendor}</TableCell>
                     <TableCell>{e.invoiceNumber}</TableCell>
-                    <TableCell className="text-right">{e.amount.toLocaleString("en-IN")}</TableCell>
-                    <TableCell>{new Date(e.dueDate).toLocaleDateString()}</TableCell>
+                    <TableCell className="text-right">
+                      {e.amount.toLocaleString("en-IN")}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(e.dueDate).toLocaleDateString()}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={
                           e.status === "pending"
                             ? "outline"
                             : e.status === "paid"
-                            ? "default"
-                            : "destructive"
+                              ? "default"
+                              : "destructive"
                         }
                       >
                         {e.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
-                      <Button size="sm" variant="outline" onClick={() => updateInvoiceStatus(e.id, "paid")}>Mark Paid</Button>
-                      <Button size="sm" variant="ghost" onClick={() => updateInvoiceStatus(e.id, "rejected")}>Reject</Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateInvoiceStatus(e.id, "paid")}
+                      >
+                        Mark Paid
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => updateInvoiceStatus(e.id, "rejected")}
+                      >
+                        Reject
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
